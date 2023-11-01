@@ -1,17 +1,16 @@
-// src/components/Table.js
-import React from 'react';
+import React, { useState } from 'react';
 
 const Table = () => {
   const generateRandomNumber = () => {
-    const randomValue = Math.floor(Math.random() * 151); // Generating random numbers between 0 and 150, including 0 and 150
+    const randomValue = Math.floor(Math.random() * 151);
     return randomValue;
   };
 
   const createMedicineData = () => {
     const medicineData = [];
     const medicineNames = [
-      'Medicine A', 'Medicine B', 'Medicine C', 'Medicine D', 'Medicine E',
-      'Medicine F', 'Medicine G', 'Medicine H', 'Medicine I', 'Medicine J', 'Medicine K'
+      'Concerta ER 54mg 24cnt 30s AUS', 'Concerta ER 18mg 24cnt 30s AUS', 'Topamax 50mg 60 Sprinkle Caps AUS', 'Invega Trinza 1x525mg SYR AUS-NZ', 'Eprex Protecs 20000U 6x0 5ml SYR AUS',
+      'Eprex Protecs 30000U 6x0 3ml SYR AUS', 'Eprex Protecs 80000U 6x0 8ml SYR AUS', 'Eprex Protecs 80000U 6x0 8ml SYR AUS', 'Imbruvica 560mg 30Tab AUS', 'Tracleer 125mg 60Tab AU', 'Preziste 600mg 60FC Tab AUS-NZ'
     ];
 
     for (let i = 0; i < medicineNames.length; i++) {
@@ -27,19 +26,30 @@ const Table = () => {
       medicineData.push(medicine);
     }
 
-    return medicineData;
+    return medicineData.map(medicine => ({
+      ...medicine,
+      selected: false,
+    }));
   };
 
   const getColor = (value) => {
     if (value === 0) {
-      return '#E92431'; // Red for zeros
+      return '#E92431';
     } else if (value <= 30) {
-      return '#FD5720'; // Orange for values between 1 and 30
+      return '#FD5720';
     } else if (value <= 100) {
-      return '#07DA01'; // Green for values between 31 and 100
+      return '#07DA01';
     } else {
-      return '#0586EC'; // Blue for values above 100
+      return '#0586EC';
     }
+  };
+
+  const [medicineData, setMedicineData] = useState(createMedicineData());
+
+  const toggleSelection = (index) => {
+    const updatedMedicineData = [...medicineData];
+    updatedMedicineData[index].selected = !updatedMedicineData[index].selected;
+    setMedicineData(updatedMedicineData);
   };
 
   const columns = [
@@ -80,12 +90,11 @@ const Table = () => {
     marginBottom: '10px',
   };
 
-  const medicineData = createMedicineData();
-
   return (
     <table style={tableStyles}>
       <thead>
         <tr>
+          <th>Select</th>
           {columns.map((col, index) => (
             <th key={index}>{col}</th>
           ))}
@@ -94,6 +103,13 @@ const Table = () => {
       <tbody>
         {medicineData.map((medicine, index) => (
           <tr key={index} style={rowStyles}>
+            <td>
+              <input
+                type="checkbox"
+                checked={medicine.selected}
+                onChange={() => toggleSelection(index)}
+              />
+            </td>
             <td>{medicine.medicine}</td>
             {medicine.values.map((value, valueIndex) => (
               <td key={valueIndex} style={{ color: getColor(value) }}>
